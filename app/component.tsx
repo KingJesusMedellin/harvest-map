@@ -101,11 +101,15 @@ function DeckGLOverlay({
       new ScatterplotLayer({
         id: "user-points",
         data: usersData,
-        getPosition: (d) => [d.M_DIR_LON, d.M_DIR_LAT],
+        getPosition: (d) => [Number(d.M_DIR_LON), Number(d.M_DIR_LAT)],
         getFillColor: [255, 0, 0],
         getRadius: 100,
         radiusMinPixels: 5,
         pickable: true,
+        // GoogleMapsOverlay's interleaved mode shares Google's depth buffer;
+        // without this the flat department polygons z-fight with these
+        // (also flat) points and can occlude them regardless of layer order.
+        parameters: { depthTest: false },
         onError: () => {
           setServiceError(
             "El servicio de usuarios no esta disponible en este momento. Por favor intenta de nuevo mas tarde.",
