@@ -134,29 +134,23 @@ function DeckGLOverlay({
   }, [layers, overlay]);
 
   useEffect(() => {
-    const google = window.google;
     if (!map) return;
 
-    // Helper to attach the overlay safely
-    const attachOverlay = () => {
-      if (map.getProjection()) {
-        overlay.setMap(map);
-      } else {
-        // If projection isn't ready, wait for it
-        const listener = google.maps.event.addListenerOnce(
-          map,
-          "projection_changed",
-          () => overlay.setMap(map),
-        );
-        return listener;
-      }
-    };
-
-    const listenerInstance = attachOverlay();
+    // deck.gl's GoogleMapsOverlay creates an internal OverlayView
+    // ("positioningOverlay") whose draw() calls fromLatLngToDivPixel before
+    // the projection is initialized. Even 'tilesloaded' can fire while the
+    // OverlayView projection is still null.
+    //
+    // 'idle' fires after the map has finished all rendering — tiles loaded,
+    // camera settled, and OverlayView projections fully initialized. It's the
+    // safest signal to attach the deck.gl overlay.
+    const idleListener = google.maps.event.addListenerOnce(map, "idle", () => {
+      overlay.setMap(map);
+    });
 
     return () => {
       overlay.setMap(null);
-      if (listenerInstance) google.maps.event.removeListener(listenerInstance);
+      google.maps.event.removeListener(idleListener);
     };
   }, [map, overlay]);
 
