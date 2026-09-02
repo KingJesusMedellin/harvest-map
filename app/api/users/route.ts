@@ -4,27 +4,52 @@ import path from "path";
 import * as turf from "@turf/turf";
 import { User } from "../../types";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // 1. Load your Department GeoJSON
     const geoPath = path.join(process.cwd(), "data", "colombia.geo.json");
     const geoContent = await fs.readFile(geoPath, "utf8");
     const departmentsGeoJSON = JSON.parse(geoContent);
 
-    // 2. Fetch the users
-    const data = await fetch(
-      "https://api.legacysoftware.online/integrations/pastoresGeoData.php",
-    );
-    if (!data.ok) {
-      return NextResponse.json(
-        {
-          error: "service_unavailable",
-          message: "External user database is offline.",
-        },
-        { status: 503 }, // 503 Service Unavailable
+    // 2. Resolve user data based on ?source= query param
+    const { searchParams } = new URL(request.url);
+    const source = searchParams.get("source");
+
+    let users: User[];
+
+    if (source === "file") {
+      // Load from local data/users.json
+      const usersPath = path.join(process.cwd(), "data", "users.json");
+      try {
+        const usersContent = await fs.readFile(usersPath, "utf8");
+        users = JSON.parse(usersContent) as User[];
+      } catch {
+        return NextResponse.json(
+          {
+            error: "file_not_found",
+            message:
+              "data/users.json not found. Place a users.json file in the data/ directory.",
+          },
+          { status: 404 },
+        );
+      }
+    } else {
+      // Default: fetch from the remote endpoint
+      const data = await fetch(
+        // "https://api.legacysoftware.online/integrations/pastoresGeoData.php",
+        "https://api.legacysoftware.online/integrations/ingresoEventoGeoData.php",
       );
+      if (!data.ok) {
+        return NextResponse.json(
+          {
+            error: "service_unavailable",
+            message: "External user database is offline.",
+          },
+          { status: 503 },
+        );
+      }
+      users = (await data.json()) as User[];
     }
-    const users = (await data.json()) as User[];
     // 3. Match users to departments
     const enrichedUsers = users.map((user: User) => {
       try {
@@ -52,7 +77,8 @@ export async function GET() {
     return NextResponse.json(enrichedUsers);
   } catch (error) {
     console.error("DETAILED ERROR:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     const errorStack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
       {
