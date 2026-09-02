@@ -10,6 +10,13 @@ export default async function Page({
   const zoom = params.zoom ? Number(params.zoom) : 6.5;
   const lat = params.lat ? Number(params.lat) : 4.711;
   const lng = params.lng ? Number(params.lng) : -74.072;
+  const source = params.source;
 
-  return <MapComponent initialZoom={zoom} initialCenter={{ lat, lng }} />;
+  return (
+    <MapComponent
+      initialZoom={zoom}
+      initialCenter={{ lat, lng }}
+      source={source}
+    />
+  );
 }

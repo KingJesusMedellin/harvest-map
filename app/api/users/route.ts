@@ -34,11 +34,12 @@ export async function GET(request: Request) {
         );
       }
     } else {
-      // Default: fetch from the remote endpoint
-      const data = await fetch(
-        // "https://api.legacysoftware.online/integrations/pastoresGeoData.php",
-        "https://api.legacysoftware.online/integrations/ingresoEventoGeoData.php",
-      );
+      // "live" fetches ingresoEventoGeoData.php; "pastors" or unset fetches pastoresGeoData.php
+      const endpoint =
+        source === "live"
+          ? "https://api.legacysoftware.online/integrations/ingresoEventoGeoData.php"
+          : "https://api.legacysoftware.online/integrations/pastoresGeoData.php";
+      const data = await fetch(endpoint);
       if (!data.ok) {
         return NextResponse.json(
           {

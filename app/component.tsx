@@ -160,9 +160,11 @@ function DeckGLOverlay({
 export default function MapComponent({
   initialZoom,
   initialCenter,
+  source,
 }: {
   initialZoom: number;
   initialCenter: { lat: number; lng: number };
+  source?: string;
 }) {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedDept, setSelectedDept] =
@@ -181,7 +183,10 @@ export default function MapComponent({
   useEffect(() => {
     async function loadUsers() {
       try {
-        const res = await fetch("/api/users");
+        const url = source
+          ? `/api/users?source=${encodeURIComponent(source)}`
+          : "/api/users";
+        const res = await fetch(url);
         if (!res.ok) throw new Error();
         const data = await res.json();
         setUsers(data);
@@ -192,7 +197,7 @@ export default function MapComponent({
       }
     }
     loadUsers();
-  }, []);
+  }, [source]);
 
   // 2. Generate a map of { "BOGOTA": 45, "ANTIOQUIA": 12 } and find the maximum
   const { departmentCounts, maxCount, internationalCount } = useMemo(() => {
