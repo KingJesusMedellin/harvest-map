@@ -111,7 +111,10 @@
   }
   .kpi { background: var(--surface); padding: 18px 20px; }
   .kpi-label { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
-  .kpi-value { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+  .kpi-value {
+    font-size: 26px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .kpi-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
 
   .filter-bar {
@@ -221,6 +224,7 @@
   tfoot td { padding: 10px 12px; font-weight: 600; color: var(--ink); border-top: 1px solid var(--ink-2); border-bottom: none; }
   tfoot td.num { font-family: "IBM Plex Mono", monospace; }
   .table-caption { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .ellipsis { display: block; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .gender-col { }
   table.hide-gender-col .gender-col { display: none; }
 
@@ -337,6 +341,21 @@ let hasGender = false;
 const state = { departments: new Set(), genders: new Set(['M', 'F', 'U']), sortCol: 'count', sortDir: 'desc' };
 
 function fmt(n){ return n.toLocaleString('en-US'); }
+let _measureCtx = null;
+function measureTextWidth(text, font){
+  if (!_measureCtx) _measureCtx = document.createElement('canvas').getContext('2d');
+  _measureCtx.font = font;
+  return _measureCtx.measureText(text).width;
+}
+function truncateToWidth(text, maxWidth, font){
+  if (measureTextWidth(text, font) <= maxWidth) return text;
+  let lo = 0, hi = text.length;
+  while (lo < hi){
+    const mid = Math.ceil((lo + hi) / 2);
+    if (measureTextWidth(text.slice(0, mid) + '…', font) <= maxWidth) lo = mid; else hi = mid - 1;
+  }
+  return text.slice(0, lo) + '…';
+}
 function niceMax(v){
   if (v <= 0) return 10;
   const mag = Math.pow(10, Math.floor(Math.log10(v)));
@@ -429,7 +448,7 @@ function renderKPIs(rows){
     const d = document.createElement('div');
     d.className = 'kpi';
     const l = document.createElement('div'); l.className = 'kpi-label'; l.textContent = label;
-    const v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = value;
+    const v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = value; v.title = String(value);
     const s = document.createElement('div'); s.className = 'kpi-sub'; s.textContent = sub;
     d.appendChild(l); d.appendChild(v); d.appendChild(s);
     wrap.appendChild(d);
@@ -487,7 +506,15 @@ function renderDeptChart(rows){
 
   shown.forEach(([name, v], i) => {
     const y = MT + i * (rowH + rowGap);
-    svg.appendChild(txt('cat-label', ML - 12, y + rowH/2 + 4, name, 'end'));
+    const labelFont = '12.5px "IBM Plex Sans", sans-serif';
+    const truncatedName = truncateToWidth(name, ML - 20, labelFont);
+    const labelEl = txt('cat-label', ML - 12, y + rowH/2 + 4, truncatedName, 'end');
+    if (truncatedName !== name){
+      const titleEl = document.createElementNS(SVGNS, 'title');
+      titleEl.textContent = name;
+      labelEl.appendChild(titleEl);
+    }
+    svg.appendChild(labelEl);
 
     const segKeys = hasGender ? ['M','F','U'] : ['ALL'];
     const segs = segKeys.map(k => [k, v[k]]).filter(s => s[1] > 0);
@@ -533,7 +560,13 @@ function renderTable(rows){
   const frag = document.createDocumentFragment();
   sorted.forEach(r => {
     const tr = document.createElement('tr');
-    const tdDept = document.createElement('td'); tdDept.textContent = r.department; tr.appendChild(tdDept);
+    const tdDept = document.createElement('td');
+    const deptSpan = document.createElement('span');
+    deptSpan.className = 'ellipsis';
+    deptSpan.textContent = r.department;
+    deptSpan.title = r.department;
+    tdDept.appendChild(deptSpan);
+    tr.appendChild(tdDept);
 
     const tdGender = document.createElement('td'); tdGender.className = 'gendercell gender-col';
     if (hasGender){
@@ -595,7 +628,7 @@ function buildDeptPopover(){
       const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = state.departments.has(o);
       cb.addEventListener('change', () => { if (cb.checked) state.departments.add(o); else state.departments.delete(o); update(); });
       lab.appendChild(cb);
-      const span = document.createElement('span'); span.textContent = o; lab.appendChild(span);
+      const span = document.createElement('span'); span.className = 'ellipsis'; span.style.maxWidth = '220px'; span.textContent = o; span.title = o; lab.appendChild(span);
       list.appendChild(lab);
     });
     popEl.appendChild(list);
