@@ -20,13 +20,11 @@
     --border: rgba(11,11,11,0.10);
     --accent: #2a78d6;
     --accent-wash: rgba(42,120,214,0.10);
-    --on-accent: #ffffff;
-    --series-city: #2a78d6;
-    --series-state: #eb6834;
-    --series-country: #1baf7a;
+    --gender-m: #2a78d6;
+    --gender-f: #e87ba4;
+    --gender-u: #898781;
     --critical: #d03b3b;
     --critical-wash: rgba(208,59,59,0.10);
-    --success: #006300;
     --shadow: 0 1px 2px rgba(11,11,11,0.04), 0 8px 24px rgba(11,11,11,0.05);
   }
   @media (prefers-color-scheme: dark) {
@@ -43,13 +41,11 @@
       --border: rgba(255,255,255,0.10);
       --accent: #3987e5;
       --accent-wash: rgba(57,135,229,0.14);
-      --on-accent: #ffffff;
-      --series-city: #3987e5;
-      --series-state: #d95926;
-      --series-country: #199e70;
+      --gender-m: #3987e5;
+      --gender-f: #d55181;
+      --gender-u: #8f8d87;
       --critical: #e66767;
       --critical-wash: rgba(230,103,103,0.14);
-      --success: #0ca30c;
       --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
     }
   }
@@ -66,13 +62,11 @@
     --border: rgba(255,255,255,0.10);
     --accent: #3987e5;
     --accent-wash: rgba(57,135,229,0.14);
-    --on-accent: #ffffff;
-    --series-city: #3987e5;
-    --series-state: #d95926;
-    --series-country: #199e70;
+    --gender-m: #3987e5;
+    --gender-f: #d55181;
+    --gender-u: #8f8d87;
     --critical: #e66767;
     --critical-wash: rgba(230,103,103,0.14);
-    --success: #0ca30c;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
   }
 
@@ -82,226 +76,96 @@
     color: var(--ink);
     font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  .page {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 48px 24px 96px;
-  }
+  .page { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; }
 
-  /* ---------- header ---------- */
   .eyebrow {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 12px;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 10px;
+    font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 10px;
   }
   h1 {
     font-family: "Newsreader", Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(32px, 4.4vw, 46px);
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-    margin: 0 0 14px;
-    text-wrap: balance;
-    max-width: 16ch;
+    font-weight: 500; font-size: clamp(32px, 4.4vw, 46px); line-height: 1.08;
+    letter-spacing: -0.01em; margin: 0 0 14px; text-wrap: balance; max-width: 16ch;
   }
-  .dek {
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-2);
-    max-width: 62ch;
-    margin: 0 0 6px;
-  }
-  .byline {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 12.5px;
-    color: var(--muted);
-    margin: 14px 0 0;
-  }
-  .byline .flag {
-    color: var(--critical);
-  }
+  .dek { font-size: 16px; line-height: 1.6; color: var(--ink-2); max-width: 62ch; margin: 0 0 16px; }
 
-  header.masthead {
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
+  .source-switch { display: inline-flex; gap: 6px; margin: 0 0 16px; flex-wrap: wrap; }
+  .source-switch button {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 7px 13px;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--ink-2); cursor: pointer;
   }
+  .source-switch button.active { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .source-switch button:hover { border-color: var(--muted); }
 
-  /* ---------- KPI row ---------- */
+  .byline { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; color: var(--muted); margin: 0; }
+  .byline .flag { color: var(--critical); }
+
+  header.masthead { padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+
   .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin-bottom: 20px;
   }
-  .kpi {
-    background: var(--surface);
-    padding: 18px 20px;
-  }
-  .kpi-label {
-    font-size: 11.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 8px;
-  }
-  .kpi-value {
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1;
-  }
-  .kpi-sub {
-    font-size: 12.5px;
-    color: var(--ink-2);
-    margin-top: 6px;
-  }
+  .kpi { background: var(--surface); padding: 18px 20px; }
+  .kpi-label { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .kpi-value { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+  .kpi-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
 
-  /* ---------- filter bar ---------- */
   .filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 22px;
-    position: relative;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 22px; position: relative;
   }
-  .filter-bar .label {
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-right: 2px;
-  }
+  .filter-bar .label { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
   .fbtn {
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--ink);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 7px 11px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.2;
+    font-family: inherit; font-size: 13px; color: var(--ink); background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; line-height: 1.2;
   }
   .fbtn:hover { border-color: var(--muted); }
-  .fbtn:focus-visible, button:focus-visible, .chip:focus-visible, th button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+  .fbtn:focus-visible, button:focus-visible, .chip:focus-visible, th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .fbtn.active { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); }
-  .fbtn .count {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px;
-    opacity: 0.75;
-  }
   .chevron { width: 9px; height: 9px; opacity: 0.6; }
 
   .chip-group { display: inline-flex; gap: 6px; flex-wrap: wrap; }
   .chip {
-    font-family: "IBM Plex Sans", sans-serif;
-    font-size: 12.5px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--ink-2);
-    cursor: pointer;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 6px 10px;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--ink-2); cursor: pointer;
   }
   .chip .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; }
-  .chip.on {
-    background: var(--accent-wash);
-    border-color: var(--accent);
-    color: var(--ink);
-  }
-  .chip.on.crit { background: var(--critical-wash); border-color: var(--critical); }
+  .chip.on { background: var(--accent-wash); border-color: var(--accent); color: var(--ink); }
 
   .spacer { flex: 1 1 auto; }
   .reset-link {
-    font-size: 12.5px;
-    color: var(--accent);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    font-size: 12.5px; color: var(--accent); background: none; border: none; cursor: pointer;
+    font-family: inherit; text-decoration: underline; text-underline-offset: 2px;
   }
-  .match-count {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
+  .match-count { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
 
   .popover {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 20;
-    width: 280px;
-    max-height: 340px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; width: 300px; max-height: 340px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+    display: none; flex-direction: column; overflow: hidden;
   }
   .popover.open { display: flex; }
-  .popover-search {
-    padding: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+  .popover-search { padding: 8px; border-bottom: 1px solid var(--border); }
   .popover-search input {
-    width: 100%;
-    font-family: inherit;
-    font-size: 13px;
-    padding: 7px 9px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--ink);
+    width: 100%; font-family: inherit; font-size: 13px; padding: 7px 9px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
   }
   .popover-search input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-  .popover-actions {
-    display: flex; gap: 12px; padding: 8px 10px; border-bottom: 1px solid var(--border);
-  }
-  .popover-actions button {
-    font-family: inherit; font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0;
-  }
+  .popover-actions { display: flex; gap: 12px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .popover-actions button { font-family: inherit; font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
   .popover-list { overflow-y: auto; padding: 6px 4px; }
-  .popover-list label {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 8px; border-radius: 6px; font-size: 13px; cursor: pointer;
-  }
+  .popover-list label { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; font-size: 13px; cursor: pointer; }
   .popover-list label:hover { background: var(--surface-2); }
   .popover-list input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
-  .popover-list .n { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); }
 
-  /* ---------- panels ---------- */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 22px 24px 20px;
-    margin-bottom: 20px;
-  }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px 20px; margin-bottom: 20px; }
   .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
   .panel-title { font-size: 15px; font-weight: 600; letter-spacing: -0.003em; }
   .panel-note { font-size: 12.5px; color: var(--muted); }
@@ -317,93 +181,68 @@
   svg .cat-label { fill: var(--ink-2); font-size: 12.5px; }
   svg .val-label { fill: var(--ink); font-size: 12px; font-weight: 500; }
   svg .grid-line { stroke: var(--grid); stroke-width: 1; }
-  svg .baseline-line { stroke: var(--baseline); stroke-width: 1; }
-  .hit { fill: transparent; cursor: pointer; }
-  .empty-state {
-    padding: 34px 10px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13.5px;
+  .empty-state, .state-banner { padding: 34px 10px; text-align: center; color: var(--muted); font-size: 13.5px; }
+  .state-banner.error { color: var(--critical); }
+  .state-banner button {
+    margin-top: 10px; font-family: inherit; font-size: 12.5px; color: var(--accent); background: none;
+    border: 1px solid var(--border); border-radius: 7px; padding: 6px 12px; cursor: pointer;
   }
 
   .tooltip {
-    position: fixed;
-    pointer-events: none;
-    background: var(--ink);
-    color: var(--page-bg);
-    font-family: "IBM Plex Sans", sans-serif;
-    font-size: 12.5px;
-    padding: 7px 10px;
-    border-radius: 7px;
-    box-shadow: var(--shadow);
-    z-index: 100;
-    opacity: 0;
-    transform: translate(-50%, -100%);
-    transition: opacity 0.08s ease;
-    white-space: nowrap;
+    position: fixed; pointer-events: none; background: var(--ink); color: var(--page-bg);
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 7px 10px; border-radius: 7px;
+    box-shadow: var(--shadow); z-index: 100; opacity: 0; transform: translate(-50%, -100%);
+    transition: opacity 0.08s ease; white-space: nowrap;
   }
   .tooltip.show { opacity: 1; }
   .tooltip .t-val { font-family: "IBM Plex Mono", monospace; font-weight: 600; }
   .tooltip .t-lbl { opacity: 0.75; margin-top: 1px; }
 
-  /* ---------- table ---------- */
   .table-scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 720px; }
-  thead th {
-    text-align: left;
-    padding: 10px 12px 8px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+  thead th { text-align: left; padding: 10px 12px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
   th .th-top {
-    display: flex; align-items: center; gap: 6px;
-    background: none; border: none; padding: 0; cursor: pointer;
-    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink);
-    letter-spacing: 0.01em;
+    display: flex; align-items: center; gap: 6px; background: none; border: none; padding: 0; cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: 0.01em;
   }
   th .th-top .arrow { font-size: 10px; color: var(--accent); opacity: 0; }
   th .th-top.sorted .arrow { opacity: 1; }
   th.num .th-top { justify-content: flex-end; width: 100%; }
   th .th-filter {
-    display: block; margin-top: 3px;
-    font-family: "IBM Plex Sans", sans-serif; font-size: 11px; color: var(--muted);
+    display: block; margin-top: 3px; font-family: "IBM Plex Sans", sans-serif; font-size: 11px; color: var(--muted);
     background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
   }
   th .th-filter.active { color: var(--accent); text-decoration: none; font-weight: 500; }
   tbody td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); }
   tbody tr:hover td { background: var(--surface-2); }
   td.num { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
-  td.loctype { display: flex; align-items: center; gap: 7px; }
+  td.gendercell { display: flex; align-items: center; gap: 7px; }
   .type-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-  tfoot td {
-    padding: 10px 12px; font-weight: 600; color: var(--ink);
-    border-top: 1px solid var(--ink-2); border-bottom: none;
-  }
+  tfoot td { padding: 10px 12px; font-weight: 600; color: var(--ink); border-top: 1px solid var(--ink-2); border-bottom: none; }
   tfoot td.num { font-family: "IBM Plex Mono", monospace; }
-  .muted-cell { color: var(--muted); }
   .table-caption { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .gender-col { }
+  table.hide-gender-col .gender-col { display: none; }
 
-  footer.foot {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-  footer.foot a { color: var(--accent); }
+  footer.foot { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.7; }
+  footer.foot code { font-family: "IBM Plex Mono", monospace; }
 
-  @media (max-width: 760px) {
-    .kpi-row { grid-template-columns: repeat(2, 1fr); }
-  }
+  @media (max-width: 760px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
 <div class="page">
 
   <header class="masthead">
-    <p class="eyebrow">Geocoding report — harvest-geocoder</p>
+    <p class="eyebrow" id="eyebrow">Live report — harvest-map</p>
     <h1>Where the Harvest Traveled</h1>
-    <p class="dek">Every location a registrant typed by hand — "Medellin Antioquia," "Bogota," "Miami USA" — resolved to a point on the map and rolled up here by department, country, resolution type, and month. Filter any dimension and the totals, the trend, and the department chart below all recompute together.</p>
-    <p class="byline">5,451 registrants · Apr–Sep 2026 · resolved via Nominatim (OpenStreetMap) · <span class="flag">97 unresolved</span>, excluded from geography · aggregated, no names attached</p>
+    <p class="dek" id="dek">Every registrant harvest-map knows about, right now, mapped to a department and rolled up here. Switch the source or filter below and the chart and table recompute together.</p>
+    <div class="source-switch" id="sourceSwitch">
+      <button data-source="pastors">Pastors database</button>
+      <button data-source="live">Live event feed</button>
+      <button data-source="file">Local file</button>
+    </div>
+    <p class="byline" id="byline">Loading…</p>
   </header>
 
   <section class="kpi-row" id="kpiRow" aria-live="polite"></section>
@@ -411,15 +250,10 @@
   <div class="filter-bar" id="filterBar">
     <span class="label">Filter</span>
     <div style="position:relative;">
-      <button class="fbtn" id="countryBtn" aria-haspopup="listbox"><span id="countryBtnLabel">Country</span> <svg class="chevron" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
-      <div class="popover" id="countryPop" role="listbox"></div>
-    </div>
-    <div style="position:relative;">
-      <button class="fbtn" id="deptBtn" aria-haspopup="listbox"><span id="deptBtnLabel">Department / state</span> <svg class="chevron" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="fbtn" id="deptBtn" aria-haspopup="listbox"><span id="deptBtnLabel">Department</span> <svg class="chevron" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
       <div class="popover" id="deptPop" role="listbox"></div>
     </div>
-    <div class="chip-group" id="typeChips"></div>
-    <div class="chip-group" id="monthChips"></div>
+    <div class="chip-group" id="genderChips"></div>
     <span class="spacer"></span>
     <span class="match-count" id="matchCount"></span>
     <button class="reset-link" id="resetBtn">Reset filters</button>
@@ -428,61 +262,43 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <div class="panel-title">Monthly registrations</div>
-        <div class="panel-note">Total records matching the filters above, by month</div>
-      </div>
-    </div>
-    <div class="chart-wrap"><svg class="chart" id="trendChart" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet"></svg></div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <div>
-        <div class="panel-title">Where in Colombia</div>
-        <div class="panel-note">Top 10 departments by registrant count, split by how precisely the location resolved</div>
+        <div class="panel-title">Registrants by department</div>
+        <div class="panel-note">Top 12 departments by registrant count — spatially matched, not name-matched</div>
       </div>
     </div>
     <div class="legend" id="deptLegend"></div>
     <div class="chart-wrap"><svg class="chart" id="deptChart" viewBox="0 0 900 400" preserveAspectRatio="xMidYMid meet"></svg></div>
-    <p class="panel-note" style="margin-top:8px;">Scoped to Colombia regardless of the country filter — outside Colombia, place names collide too often with Colombian municipality names (e.g. Florida, USA vs. Florida, Valle del Cauca) for "department" to mean anything reliable.</p>
   </section>
 
   <section class="panel">
     <div class="panel-head">
       <div>
         <div class="panel-title">Aggregated breakdown</div>
-        <div class="panel-note">One row per country · department · resolution type · month combination</div>
+        <div class="panel-note" id="tableNote">One row per department combination</div>
       </div>
     </div>
     <div class="table-scroll">
-      <table>
+      <table id="reportTable">
         <thead>
           <tr>
-            <th style="width:16%">
-              <button class="th-top" data-col="Country">Country <span class="arrow">▾</span></button>
-              <button class="th-filter" data-open="country">Filter…</button>
-            </th>
-            <th style="width:20%">
-              <button class="th-top" data-col="deptGroup">Department / state <span class="arrow">▾</span></button>
+            <th style="width:40%">
+              <button class="th-top sorted" data-col="department">Department <span class="arrow">▾</span></button>
               <button class="th-filter" data-open="dept">Filter…</button>
             </th>
-            <th style="width:18%">
-              <button class="th-top" data-col="Location_Type">Resolution <span class="arrow">▾</span></button>
-              <button class="th-filter" data-open="type">Filter…</button>
+            <th class="gender-col" style="width:30%">
+              <button class="th-top" data-col="gender">Gender <span class="arrow">▾</span></button>
+              <button class="th-filter" data-open="gender">Filter…</button>
             </th>
-            <th style="width:14%">
-              <button class="th-top" data-col="Month">Month <span class="arrow">▾</span></button>
-              <button class="th-filter" data-open="month">Filter…</button>
-            </th>
-            <th class="num" style="width:12%">
-              <button class="th-top sorted" data-col="Count">Count <span class="arrow">▾</span></button>
+            <th class="num" style="width:15%">
+              <button class="th-top" data-col="count">Count <span class="arrow">▾</span></button>
             </th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
         <tfoot>
           <tr>
-            <td colspan="4">Total — filtered rows shown</td>
+            <td>Total — filtered rows shown</td>
+            <td class="gender-col"></td>
             <td class="num" id="tableTotal">—</td>
           </tr>
         </tfoot>
@@ -491,41 +307,34 @@
     <p class="table-caption" id="tableCaption"></p>
   </section>
 
-  <footer class="foot">
-    Source: <code>geocoder.py --export-users</code> on <code>input.xlsx</code>, aggregated to protect registrant names and phone numbers before publishing. Geocoding by Nominatim / OpenStreetMap under the ODbL.
-  </footer>
+  <footer class="foot" id="footNote"></footer>
 
 </div>
 
 <div class="tooltip" id="tooltip"><div class="t-val" id="ttVal"></div><div class="t-lbl" id="ttLbl"></div></div>
+
 <script>
-const DATA = __HARVEST_REPORT_DATA__;
+const params = new URLSearchParams(location.search);
+const rawSource = (params.get('source') || '').toLowerCase();
+const ACTIVE_SOURCE = (rawSource === 'live' || rawSource === 'file') ? rawSource : 'pastors';
 
-DATA.forEach(r => { r.deptGroup = r.Country === 'Colombia' ? r.Departamento : '(International)'; });
-
-const MONTHS = ['2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'];
-const MONTH_LABEL = {'2026-04':'Apr','2026-05':'May','2026-06':'Jun','2026-07':'Jul','2026-08':'Aug','2026-09':'Sep'};
-const TYPE_LABEL = {city:'City-level', state:'State-level', country:'Country-level', error:'Unresolved'};
-const TYPE_COLOR = {city:'var(--series-city)', state:'var(--series-state)', country:'var(--series-country)', error:'var(--critical)'};
-
-const countryList = [...new Set(DATA.map(r => r.Country))].sort((a,b) => {
-  if (a === 'Colombia') return -1; if (b === 'Colombia') return 1;
-  if (a === '(Unresolved)') return 1; if (b === '(Unresolved)') return -1;
-  return a.localeCompare(b);
-});
-const deptGroupList = [...new Set(DATA.map(r => r.deptGroup))].sort((a,b) => {
-  if (a === '(International)') return 1; if (b === '(International)') return -1;
-  return a.localeCompare(b);
-});
-
-const state = {
-  countries: new Set(countryList),
-  deptGroups: new Set(deptGroupList),
-  types: new Set(['city','state','country','error']),
-  months: new Set(MONTHS),
-  sortCol: 'Count',
-  sortDir: 'desc',
+const SOURCE_META = {
+  live: { label: 'Live event feed', desc: 'Fetched live from harvest-map’s ingresoEventoGeoData endpoint.' },
+  file: { label: 'Local file', desc: 'Read from data/users.json on the server — the geocoder’s latest Colombia-only export.' },
+  pastors: { label: 'Pastors database', desc: 'Fetched live from harvest-map’s pastoresGeoData endpoint (default source).' },
 };
+
+document.getElementById('eyebrow').textContent = 'Live report · ' + SOURCE_META[ACTIVE_SOURCE].label;
+document.querySelectorAll('#sourceSwitch button').forEach(b => {
+  b.classList.toggle('active', b.dataset.source === ACTIVE_SOURCE);
+  b.addEventListener('click', () => { location.href = '/report?source=' + b.dataset.source; });
+});
+
+const EXCLUDED_DEPTS = ['International', 'Invalid Coordinates'];
+
+let RAW = [];
+let hasGender = false;
+const state = { departments: new Set(), genders: new Set(['M', 'F', 'U']), sortCol: 'count', sortDir: 'desc' };
 
 function fmt(n){ return n.toLocaleString('en-US'); }
 function niceMax(v){
@@ -535,31 +344,22 @@ function niceMax(v){
   for (const s of steps){ if (v <= s*mag) return s*mag; }
   return 10*mag;
 }
-
-function filteredRows(){
-  return DATA.filter(r =>
-    state.countries.has(r.Country) &&
-    state.deptGroups.has(r.deptGroup) &&
-    state.types.has(r.Location_Type) &&
-    state.months.has(r.Month)
-  );
-}
+function genderKey(g){ return g === 'M' ? 'M' : g === 'F' ? 'F' : 'U'; }
+const GENDER_LABEL = { M: 'Male', F: 'Female', U: 'Not specified' };
+const GENDER_COLOR = { M: 'var(--gender-m)', F: 'var(--gender-f)', U: 'var(--gender-u)' };
 
 /* ---------------- tooltip ---------------- */
 const tip = document.getElementById('tooltip');
 const ttVal = document.getElementById('ttVal');
 const ttLbl = document.getElementById('ttLbl');
 function showTip(evt, val, lbl){
-  ttVal.textContent = val;
-  ttLbl.textContent = lbl;
-  tip.classList.add('show');
-  moveTip(evt);
+  ttVal.textContent = val; ttLbl.textContent = lbl;
+  tip.classList.add('show'); moveTip(evt);
 }
 function moveTip(evt){
   const x = evt.clientX ?? (evt.target.getBoundingClientRect().left + evt.target.getBoundingClientRect().width/2);
   const y = evt.clientY ?? evt.target.getBoundingClientRect().top;
-  tip.style.left = x + 'px';
-  tip.style.top = (y - 12) + 'px';
+  tip.style.left = x + 'px'; tip.style.top = (y - 12) + 'px';
 }
 function hideTip(){ tip.classList.remove('show'); }
 
@@ -569,8 +369,8 @@ function el(tag, attrs){
   for (const k in attrs) e.setAttribute(k, attrs[k]);
   return e;
 }
-function txt(tag_class, x, y, content, anchor){
-  const t = el('text', {x, y, class: tag_class, 'text-anchor': anchor || 'start'});
+function txt(cls, x, y, content, anchor){
+  const t = el('text', {x, y, class: cls, 'text-anchor': anchor || 'start'});
   t.textContent = content;
   return t;
 }
@@ -580,67 +380,59 @@ function roundedRightPath(x, y, w, h, r){
   return `M${x} ${y} H${x+w-r} A${r} ${r} 0 0 1 ${x+w} ${y+r} V${y+h-r} A${r} ${r} 0 0 1 ${x+w-r} ${y+h} H${x} Z`;
 }
 
-/* ---------------- trend chart ---------------- */
-function renderTrend(rows){
-  const svg = document.getElementById('trendChart');
-  svg.innerHTML = '';
-  const W = 900, H = 260, ML = 46, MR = 24, MT = 18, MB = 34;
-  const plotW = W - ML - MR, plotH = H - MT - MB;
-
-  const byMonth = {};
-  MONTHS.forEach(m => byMonth[m] = 0);
-  rows.forEach(r => byMonth[r.Month] += r.Count);
-  const values = MONTHS.map(m => byMonth[m]);
-  const max = niceMax(Math.max(...values, 1));
-
-  const xFor = i => ML + (plotW * i / (MONTHS.length - 1));
-  const yFor = v => MT + plotH - (plotH * v / max);
-
-  // gridlines + y ticks
-  const ticks = [0, max/2, max];
-  ticks.forEach(t => {
-    const y = yFor(t);
-    svg.appendChild(el('line', {x1: ML, x2: W-MR, y1: y, y2: y, class: 'grid-line'}));
-    svg.appendChild(txt('tick-label mono', ML - 10, y + 4, fmt(Math.round(t)), 'end'));
+function filteredRaw(){
+  return RAW.filter(u => {
+    const dept = (u.department || 'Unknown').trim() || 'Unknown';
+    if (!state.departments.has(dept)) return false;
+    if (hasGender && !state.genders.has(genderKey(u.M_GENDER))) return false;
+    return true;
   });
-  svg.appendChild(el('line', {x1: ML, x2: W-MR, y1: yFor(0), y2: yFor(0), class:'baseline-line'}));
+}
 
-  // x labels
-  MONTHS.forEach((m,i) => {
-    svg.appendChild(txt('tick-label', xFor(i), H - 10, MONTH_LABEL[m], 'middle'));
+function aggregate(rows){
+  const map = new Map();
+  rows.forEach(u => {
+    const dept = (u.department || 'Unknown').trim() || 'Unknown';
+    const g = hasGender ? genderKey(u.M_GENDER) : 'ALL';
+    const k = dept + '' + g;
+    const cur = map.get(k) || { department: dept, gender: g, count: 0 };
+    cur.count++;
+    map.set(k, cur);
   });
+  return [...map.values()];
+}
 
-  if (values.every(v => v === 0)) {
-    svg.appendChild(txt('cat-label', W/2, H/2, 'No records match the current filters', 'middle'));
-    return;
-  }
+/* ---------------- KPI tiles ---------------- */
+function renderKPIs(rows){
+  const total = rows.length;
+  const byDept = new Map();
+  rows.forEach(u => {
+    const d = (u.department || 'Unknown').trim() || 'Unknown';
+    byDept.set(d, (byDept.get(d) || 0) + 1);
+  });
+  let topDept = '—', topCount = 0;
+  byDept.forEach((c, d) => { if (c > topCount){ topCount = c; topDept = d; } });
+  const topPct = total ? Math.round(100 * topCount / total) : 0;
+  const realDepts = [...byDept.keys()].filter(d => !EXCLUDED_DEPTS.includes(d));
+  const outside = rows.filter(u => EXCLUDED_DEPTS.includes((u.department || '').trim())).length;
+  const outsidePct = total ? Math.round(100 * outside / total) : 0;
 
-  // area
-  let areaD = `M${xFor(0)} ${yFor(0)} `;
-  values.forEach((v,i) => areaD += `L${xFor(i)} ${yFor(v)} `);
-  areaD += `L${xFor(values.length-1)} ${yFor(0)} Z`;
-  svg.appendChild(el('path', {d: areaD, fill: 'var(--accent)', opacity: 0.10, stroke: 'none'}));
-
-  // line
-  let lineD = '';
-  values.forEach((v,i) => lineD += (i===0?'M':'L') + xFor(i) + ' ' + yFor(v) + ' ');
-  svg.appendChild(el('path', {d: lineD, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin':'round', 'stroke-linecap':'round'}));
-
-  const peakIdx = values.indexOf(Math.max(...values));
-  values.forEach((v,i) => {
-    const x = xFor(i), y = yFor(v);
-    svg.appendChild(el('circle', {cx:x, cy:y, r:4, fill:'var(--accent)', stroke:'var(--surface)', 'stroke-width':2}));
-    if (i === peakIdx || i === values.length-1){
-      svg.appendChild(txt('val-label mono', x, y - 12, fmt(v), 'middle'));
-    }
-    const hit = el('circle', {cx:x, cy:y, r:16, class:'hit'});
-    hit.setAttribute('tabindex','0');
-    hit.addEventListener('pointermove', e => showTip(e, fmt(v), MONTH_LABEL[MONTHS[i]] + ' 2026'));
-    hit.addEventListener('pointerenter', e => showTip(e, fmt(v), MONTH_LABEL[MONTHS[i]] + ' 2026'));
-    hit.addEventListener('pointerleave', hideTip);
-    hit.addEventListener('focus', e => showTip(e, fmt(v), MONTH_LABEL[MONTHS[i]] + ' 2026'));
-    hit.addEventListener('blur', hideTip);
-    svg.appendChild(hit);
+  const wrap = document.getElementById('kpiRow');
+  wrap.innerHTML = '';
+  const tiles = [
+    ['Registrants matching filters', fmt(total), SOURCE_META[ACTIVE_SOURCE].label],
+    ['Top department', topDept, topPct + '% of matching registrants'],
+    ['Colombian departments reached', realDepts.length, 'distinct departments'],
+    ['International / unresolved', outsidePct + '%', fmt(outside) + ' of ' + fmt(total)],
+  ];
+  tiles.forEach(([label, value, sub]) => {
+    const d = document.createElement('div');
+    d.className = 'kpi';
+    const l = document.createElement('div'); l.className = 'kpi-label'; l.textContent = label;
+    const v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = value;
+    const s = document.createElement('div'); s.className = 'kpi-sub'; s.textContent = sub;
+    d.appendChild(l); d.appendChild(v); d.appendChild(s);
+    wrap.appendChild(d);
   });
 }
 
@@ -648,73 +440,72 @@ function renderTrend(rows){
 function renderDeptChart(rows){
   const svg = document.getElementById('deptChart');
   const legend = document.getElementById('deptLegend');
-  svg.innerHTML = '';
-  legend.innerHTML = '';
+  svg.innerHTML = ''; legend.innerHTML = '';
 
-  const coRows = rows.filter(r => r.Country === 'Colombia' && r.Location_Type !== 'error');
-  if (coRows.length === 0){
-    svg.setAttribute('viewBox','0 0 900 120');
-    const g = el('foreignObject', {x:0,y:0,width:900,height:120});
-    svg.appendChild(g);
+  if (rows.length === 0){
+    svg.setAttribute('viewBox', '0 0 900 120');
+    const fo = el('foreignObject', {x:0, y:0, width:900, height:120});
+    svg.appendChild(fo);
     const wrap = document.createElement('div');
     wrap.className = 'empty-state';
-    wrap.textContent = 'No Colombia rows in the current filter — include Colombia to see the department breakdown.';
-    g.appendChild(wrap);
+    wrap.textContent = 'No records match the current filters.';
+    fo.appendChild(wrap);
     return;
   }
 
   const byDept = {};
-  coRows.forEach(r => {
-    byDept[r.Departamento] = byDept[r.Departamento] || {city:0, state:0, country:0, total:0};
-    byDept[r.Departamento][r.Location_Type] += r.Count;
-    byDept[r.Departamento].total += r.Count;
+  rows.forEach(u => {
+    const dept = (u.department || 'Unknown').trim() || 'Unknown';
+    const g = hasGender ? genderKey(u.M_GENDER) : 'ALL';
+    byDept[dept] = byDept[dept] || { M:0, F:0, U:0, ALL:0, total:0 };
+    byDept[dept][g]++;
+    byDept[dept].total++;
   });
   let entries = Object.entries(byDept).sort((a,b) => b[1].total - a[1].total);
-  let shown = entries.slice(0, 10);
-  const rest = entries.slice(10);
+  let shown = entries.slice(0, 12);
+  const rest = entries.slice(12);
   if (rest.length){
-    const other = {city:0, state:0, country:0, total:0};
-    rest.forEach(([,v]) => { other.city+=v.city; other.state+=v.state; other.country+=v.country; other.total+=v.total; });
+    const other = { M:0, F:0, U:0, ALL:0, total:0 };
+    rest.forEach(([,v]) => { other.M+=v.M; other.F+=v.F; other.U+=v.U; other.ALL+=v.ALL; other.total+=v.total; });
     shown.push(['Other (' + rest.length + ' more)', other]);
   }
 
-  const rowH = 28, rowGap = 8, ML = 190, MR = 70, MT = 8, MB = 8;
+  const rowH = 24, rowGap = 8, ML = 200, MR = 70, MT = 8, MB = 8;
   const plotW = 900 - ML - MR;
   const H = MT + shown.length * (rowH + rowGap) - rowGap + MB;
   svg.setAttribute('viewBox', `0 0 900 ${H}`);
   const max = niceMax(Math.max(...shown.map(([,v]) => v.total)));
 
-  legend.innerHTML = '';
-  [['city','City-level'],['state','State-level'],['country','Country-level']].forEach(([k,label]) => {
-    const item = document.createElement('span');
-    item.className = 'legend-item';
-    const sw = document.createElement('span');
-    sw.className = 'legend-swatch';
-    sw.style.background = TYPE_COLOR[k];
-    item.appendChild(sw);
-    item.appendChild(document.createTextNode(label));
-    legend.appendChild(item);
-  });
+  if (hasGender){
+    [['M','Male'],['F','Female'],['U','Not specified']].forEach(([k,label]) => {
+      const item = document.createElement('span'); item.className = 'legend-item';
+      const sw = document.createElement('span'); sw.className = 'legend-swatch'; sw.style.background = GENDER_COLOR[k];
+      item.appendChild(sw); item.appendChild(document.createTextNode(label));
+      legend.appendChild(item);
+    });
+  }
 
   shown.forEach(([name, v], i) => {
     const y = MT + i * (rowH + rowGap);
     svg.appendChild(txt('cat-label', ML - 12, y + rowH/2 + 4, name, 'end'));
 
-    const segs = [['city', v.city], ['state', v.state], ['country', v.country]].filter(s => s[1] > 0);
+    const segKeys = hasGender ? ['M','F','U'] : ['ALL'];
+    const segs = segKeys.map(k => [k, v[k]]).filter(s => s[1] > 0);
     let cx = ML;
-    const gap = 2;
-    segs.forEach(([type, val], si) => {
+    const gap = hasGender ? 2 : 0;
+    segs.forEach(([g, val], si) => {
       const segW = Math.max(0, (plotW * val / max) - (si < segs.length-1 ? gap : 0));
       const isLast = si === segs.length - 1;
-      const color = TYPE_COLOR[type];
+      const color = GENDER_COLOR[g];
       let shape;
       if (isLast){
         shape = el('path', {d: roundedRightPath(cx, y, Math.max(segW,1), rowH, 4), fill: color});
       } else {
         shape = el('rect', {x:cx, y:y, width: Math.max(segW,1), height: rowH, fill: color});
       }
-      shape.addEventListener('pointermove', e => showTip(e, fmt(val), name + ' — ' + TYPE_LABEL[type]));
-      shape.addEventListener('pointerenter', e => showTip(e, fmt(val), name + ' — ' + TYPE_LABEL[type]));
+      const lbl = hasGender ? (name + ' — ' + GENDER_LABEL[g]) : name;
+      shape.addEventListener('pointermove', e => showTip(e, fmt(val), lbl));
+      shape.addEventListener('pointerenter', e => showTip(e, fmt(val), lbl));
       shape.addEventListener('pointerleave', hideTip);
       svg.appendChild(shape);
       cx += segW + gap;
@@ -723,136 +514,88 @@ function renderDeptChart(rows){
   });
 }
 
-/* ---------------- KPI tiles ---------------- */
-function renderKPIs(rows){
-  const total = rows.reduce((s,r) => s + r.Count, 0);
-  const coTotal = rows.filter(r => r.Country === 'Colombia').reduce((s,r) => s + r.Count, 0);
-  const pct = total ? Math.round(100 * coTotal / total) : 0;
-  const depts = new Set(rows.filter(r => r.Country === 'Colombia').map(r => r.Departamento)).size;
-  const countries = new Set(rows.filter(r => r.Country !== '(Unresolved)').map(r => r.Country)).size;
-
-  const wrap = document.getElementById('kpiRow');
-  wrap.innerHTML = '';
-  const tiles = [
-    ['Registrants matching filters', fmt(total), MONTHS.length + ' months, Apr–Sep 2026'],
-    ['From Colombia', pct + '%', fmt(coTotal) + ' of ' + fmt(total)],
-    ['Colombian departments reached', depts, 'of 33 official departments'],
-    ['Countries represented', countries, 'incl. Colombia'],
-  ];
-  tiles.forEach(([label, value, sub]) => {
-    const d = document.createElement('div');
-    d.className = 'kpi';
-    d.innerHTML = `<div class="kpi-label"></div><div class="kpi-value"></div><div class="kpi-sub"></div>`;
-    d.children[0].textContent = label;
-    d.children[1].textContent = value;
-    d.children[2].textContent = sub;
-    wrap.appendChild(d);
-  });
-}
-
 /* ---------------- table ---------------- */
 function renderTable(rows){
+  const aggRows = aggregate(rows);
+  const table = document.getElementById('reportTable');
+  table.classList.toggle('hide-gender-col', !hasGender);
+
   const body = document.getElementById('tableBody');
   body.innerHTML = '';
-  const sorted = [...rows].sort((a,b) => {
+  const sorted = [...aggRows].sort((a,b) => {
     const col = state.sortCol;
-    let av = a[col], bv = b[col];
     let cmp;
-    if (col === 'Count') cmp = av - bv;
-    else cmp = String(av).localeCompare(String(bv));
+    if (col === 'count') cmp = a.count - b.count;
+    else cmp = String(a[col]).localeCompare(String(b[col]));
     return state.sortDir === 'asc' ? cmp : -cmp;
   });
 
   const frag = document.createDocumentFragment();
   sorted.forEach(r => {
     const tr = document.createElement('tr');
+    const tdDept = document.createElement('td'); tdDept.textContent = r.department; tr.appendChild(tdDept);
 
-    const tdCountry = document.createElement('td');
-    tdCountry.textContent = r.Country;
-    tr.appendChild(tdCountry);
-
-    const tdDept = document.createElement('td');
-    if (r.Country === 'Colombia'){
-      tdDept.textContent = r.Departamento;
-    } else {
-      tdDept.textContent = '—';
-      tdDept.className = 'muted-cell';
+    const tdGender = document.createElement('td'); tdGender.className = 'gendercell gender-col';
+    if (hasGender){
+      const dot = document.createElement('span'); dot.className = 'type-dot'; dot.style.background = GENDER_COLOR[r.gender];
+      const label = document.createElement('span'); label.textContent = GENDER_LABEL[r.gender];
+      tdGender.appendChild(dot); tdGender.appendChild(label);
     }
-    tr.appendChild(tdDept);
+    tr.appendChild(tdGender);
 
-    const tdType = document.createElement('td');
-    tdType.className = 'loctype';
-    const dot = document.createElement('span');
-    dot.className = 'type-dot';
-    dot.style.background = TYPE_COLOR[r.Location_Type];
-    const label = document.createElement('span');
-    label.textContent = TYPE_LABEL[r.Location_Type] || r.Location_Type;
-    tdType.appendChild(dot);
-    tdType.appendChild(label);
-    tr.appendChild(tdType);
-
-    const tdMonth = document.createElement('td');
-    tdMonth.textContent = MONTH_LABEL[r.Month] + ' 2026';
-    tr.appendChild(tdMonth);
-
-    const tdCount = document.createElement('td');
-    tdCount.className = 'num';
-    tdCount.textContent = fmt(r.Count);
-    tr.appendChild(tdCount);
-
+    const tdCount = document.createElement('td'); tdCount.className = 'num'; tdCount.textContent = fmt(r.count); tr.appendChild(tdCount);
     frag.appendChild(tr);
   });
   body.appendChild(frag);
 
-  document.getElementById('tableTotal').textContent = fmt(sorted.reduce((s,r) => s + r.Count, 0));
+  document.getElementById('tableTotal').textContent = fmt(sorted.reduce((s,r) => s + r.count, 0));
   document.getElementById('tableCaption').textContent =
-    `${fmt(sorted.length)} of ${fmt(DATA.length)} aggregated rows shown — sorted by ${state.sortCol === 'deptGroup' ? 'department / state' : state.sortCol.toLowerCase()}, ${state.sortDir === 'desc' ? 'high to low' : 'low to high'}.`;
+    `${fmt(sorted.length)} aggregated rows — sorted by ${state.sortCol}, ${state.sortDir === 'desc' ? 'high to low' : 'low to high'}.`;
+  document.getElementById('tableNote').textContent = hasGender
+    ? 'One row per department × gender combination'
+    : 'One row per department (gender not available for this source)';
 
   document.querySelectorAll('.th-top').forEach(b => {
     b.classList.toggle('sorted', b.dataset.col === state.sortCol);
-    b.querySelector('.arrow').textContent = (b.dataset.col === state.sortCol && state.sortDir === 'asc') ? '▴' : '▾';
+    const arrow = b.querySelector('.arrow');
+    if (arrow) arrow.textContent = (b.dataset.col === state.sortCol && state.sortDir === 'asc') ? '▴' : '▾';
   });
 }
 
-/* ---------------- multiselect popovers ---------------- */
-function buildPopover(popEl, btnEl, labelEl, options, selectedSet, allSet, baseLabel, onChange){
+/* ---------------- department multiselect popover ---------------- */
+function buildDeptPopover(){
+  const popEl = document.getElementById('deptPop');
+  const btnEl = document.getElementById('deptBtn');
+  const labelEl = document.getElementById('deptBtnLabel');
+  const options = [...new Set(RAW.map(u => (u.department || 'Unknown').trim() || 'Unknown'))].sort((a,b) => {
+    const aEx = EXCLUDED_DEPTS.includes(a), bEx = EXCLUDED_DEPTS.includes(b);
+    if (aEx !== bEx) return aEx ? 1 : -1;
+    return a.localeCompare(b);
+  });
+  state.departments = new Set(options);
+
   function render(filterText){
     popEl.innerHTML = '';
-    const searchWrap = document.createElement('div');
-    searchWrap.className = 'popover-search';
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Search…';
-    input.value = filterText || '';
+    const searchWrap = document.createElement('div'); searchWrap.className = 'popover-search';
+    const input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Search…'; input.value = filterText || '';
     input.addEventListener('input', () => render(input.value));
-    searchWrap.appendChild(input);
-    popEl.appendChild(searchWrap);
+    searchWrap.appendChild(input); popEl.appendChild(searchWrap);
 
-    const actions = document.createElement('div');
-    actions.className = 'popover-actions';
+    const actions = document.createElement('div'); actions.className = 'popover-actions';
     const allBtn = document.createElement('button'); allBtn.textContent = 'All';
     const noneBtn = document.createElement('button'); noneBtn.textContent = 'None';
-    allBtn.addEventListener('click', () => { options.forEach(o => selectedSet.add(o)); update(); });
-    noneBtn.addEventListener('click', () => { selectedSet.clear(); update(); });
-    actions.appendChild(allBtn); actions.appendChild(noneBtn);
-    popEl.appendChild(actions);
+    allBtn.addEventListener('click', () => { options.forEach(o => state.departments.add(o)); update(); });
+    noneBtn.addEventListener('click', () => { state.departments.clear(); update(); });
+    actions.appendChild(allBtn); actions.appendChild(noneBtn); popEl.appendChild(actions);
 
-    const list = document.createElement('div');
-    list.className = 'popover-list';
+    const list = document.createElement('div'); list.className = 'popover-list';
     const q = (filterText || '').toLowerCase();
     options.filter(o => o.toLowerCase().includes(q)).forEach(o => {
       const lab = document.createElement('label');
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = selectedSet.has(o);
-      cb.addEventListener('change', () => {
-        if (cb.checked) selectedSet.add(o); else selectedSet.delete(o);
-        update();
-      });
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = state.departments.has(o);
+      cb.addEventListener('change', () => { if (cb.checked) state.departments.add(o); else state.departments.delete(o); update(); });
       lab.appendChild(cb);
-      const span = document.createElement('span');
-      span.textContent = o;
-      lab.appendChild(span);
+      const span = document.createElement('span'); span.textContent = o; lab.appendChild(span);
       list.appendChild(lab);
     });
     popEl.appendChild(list);
@@ -861,11 +604,10 @@ function buildPopover(popEl, btnEl, labelEl, options, selectedSet, allSet, baseL
 
   function update(){
     render(popEl.querySelector('input')?.value);
-    const n = selectedSet.size, total = allSet.size;
-    labelEl.textContent = n === total ? baseLabel : `${baseLabel} (${n} of ${total})`;
+    const n = state.departments.size, total = options.length;
+    labelEl.textContent = n === total ? 'Department' : `Department (${n} of ${total})`;
     btnEl.classList.toggle('active', n !== total);
-    document.querySelectorAll(`.th-filter[data-open]`).forEach(b => {});
-    onChange();
+    rerender();
   }
 
   btnEl.addEventListener('click', (e) => {
@@ -875,113 +617,122 @@ function buildPopover(popEl, btnEl, labelEl, options, selectedSet, allSet, baseL
     if (willOpen){ popEl.classList.add('open'); render(''); }
   });
   document.addEventListener('click', (e) => {
-    if (!popEl.contains(e.target) && e.target !== btnEl) popEl.classList.remove('open');
+    if (!popEl.contains(e.target) && e.target !== btnEl && !btnEl.contains(e.target)) popEl.classList.remove('open');
   });
 
-  update.initial = () => { render(''); };
   return update;
 }
+let deptUpdate = null;
 
-let rerender;
-
-const countryUpdate = buildPopover(
-  document.getElementById('countryPop'), document.getElementById('countryBtn'),
-  document.getElementById('countryBtnLabel'), countryList, state.countries, new Set(countryList),
-  'Country', () => rerender()
-);
-const deptUpdate = buildPopover(
-  document.getElementById('deptPop'), document.getElementById('deptBtn'),
-  document.getElementById('deptBtnLabel'), deptGroupList, state.deptGroups, new Set(deptGroupList),
-  'Department / state', () => rerender()
-);
-
-/* type + month chips */
-const typeChipsWrap = document.getElementById('typeChips');
-['city','state','country','error'].forEach(t => {
-  const chip = document.createElement('button');
-  chip.className = 'chip on' + (t === 'error' ? ' crit' : '');
-  chip.innerHTML = `<span class="dot" style="background:${TYPE_COLOR[t]}"></span>${TYPE_LABEL[t]}`;
-  chip.addEventListener('click', () => {
-    if (state.types.has(t)) state.types.delete(t); else state.types.add(t);
-    chip.classList.toggle('on');
-    rerender();
+/* ---------------- gender chips ---------------- */
+function buildGenderChips(){
+  const wrap = document.getElementById('genderChips');
+  wrap.innerHTML = '';
+  if (!hasGender) return;
+  state.genders = new Set(['M','F','U']);
+  ['M','F','U'].forEach(g => {
+    const chip = document.createElement('button');
+    chip.className = 'chip on';
+    chip.innerHTML = '';
+    const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = GENDER_COLOR[g];
+    chip.appendChild(dot);
+    chip.appendChild(document.createTextNode(GENDER_LABEL[g]));
+    chip.addEventListener('click', () => {
+      if (state.genders.has(g)) state.genders.delete(g); else state.genders.add(g);
+      chip.classList.toggle('on');
+      rerender();
+    });
+    wrap.appendChild(chip);
   });
-  typeChipsWrap.appendChild(chip);
-});
-
-const monthChipsWrap = document.getElementById('monthChips');
-MONTHS.forEach(m => {
-  const chip = document.createElement('button');
-  chip.className = 'chip on';
-  chip.textContent = MONTH_LABEL[m];
-  chip.addEventListener('click', () => {
-    if (state.months.has(m)) state.months.delete(m); else state.months.add(m);
-    chip.classList.toggle('on');
-    rerender();
-  });
-  monthChipsWrap.appendChild(chip);
-});
+}
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  state.countries = new Set(countryList);
-  state.deptGroups = new Set(deptGroupList);
-  state.types = new Set(['city','state','country','error']);
-  state.months = new Set(MONTHS);
   document.querySelectorAll('.chip').forEach(c => c.classList.add('on'));
-  countryUpdate();
-  deptUpdate();
-  rerender();
+  state.genders = new Set(['M','F','U']);
+  if (deptUpdate){
+    const opts = [...new Set(RAW.map(u => (u.department || 'Unknown').trim() || 'Unknown'))];
+    state.departments = new Set(opts);
+    deptUpdate();
+  } else {
+    rerender();
+  }
 });
 
 document.querySelectorAll('.th-top').forEach(b => {
   b.addEventListener('click', () => {
-    if (state.sortCol === b.dataset.col){
-      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      state.sortCol = b.dataset.col;
-      state.sortDir = b.dataset.col === 'Count' ? 'desc' : 'asc';
-    }
+    if (state.sortCol === b.dataset.col){ state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc'; }
+    else { state.sortCol = b.dataset.col; state.sortDir = b.dataset.col === 'count' ? 'desc' : 'asc'; }
     rerender();
   });
 });
 
 document.querySelectorAll('.th-filter').forEach(b => {
   b.addEventListener('click', () => {
-    const target = { country: document.getElementById('countryBtn'), dept: document.getElementById('deptBtn') }[b.dataset.open];
-    let panel;
-    if (b.dataset.open === 'type') panel = document.getElementById('typeChips');
-    else if (b.dataset.open === 'month') panel = document.getElementById('monthChips');
-    else panel = target;
+    let panel = b.dataset.open === 'dept' ? document.getElementById('deptBtn') : document.getElementById('genderChips');
     panel.scrollIntoView({behavior:'smooth', block:'center'});
-    if (target) target.click();
+    if (b.dataset.open === 'dept') panel.click();
     panel.style.outline = '2px solid var(--accent)';
     panel.style.outlineOffset = '3px';
     setTimeout(() => { panel.style.outline = ''; }, 900);
   });
 });
 
-rerender = function(){
-  const rows = filteredRows();
-  const total = DATA.reduce((s,r) => s + r.Count, 0);
-  const shown = rows.reduce((s,r) => s + r.Count, 0);
-  document.getElementById('matchCount').textContent = `${fmt(shown)} of ${fmt(total)} records`;
+function rerender(){
+  const rows = filteredRaw();
+  document.getElementById('matchCount').textContent = `${fmt(rows.length)} of ${fmt(RAW.length)} records`;
   renderKPIs(rows);
-  renderTrend(rows);
   renderDeptChart(rows);
   renderTable(rows);
   document.querySelectorAll('.th-filter').forEach(b => {
-    const key = b.dataset.open;
     let active = false;
-    if (key === 'country') active = state.countries.size !== countryList.length;
-    if (key === 'dept') active = state.deptGroups.size !== deptGroupList.length;
-    if (key === 'type') active = state.types.size !== 4;
-    if (key === 'month') active = state.months.size !== MONTHS.length;
+    if (b.dataset.open === 'dept'){
+      const total = new Set(RAW.map(u => (u.department || 'Unknown').trim() || 'Unknown')).size;
+      active = state.departments.size !== total;
+    }
+    if (b.dataset.open === 'gender') active = state.genders.size !== 3;
     b.classList.toggle('active', active);
     b.textContent = active ? 'Filtered' : 'Filter…';
   });
-};
+}
 
-rerender();
+/* ---------------- load ---------------- */
+async function load(){
+  document.getElementById('byline').textContent = 'Loading ' + SOURCE_META[ACTIVE_SOURCE].label.toLowerCase() + '…';
+  const kpiRow = document.getElementById('kpiRow');
+  try {
+    const url = '/api/users?source=' + encodeURIComponent(ACTIVE_SOURCE);
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!res.ok || data.error){
+      throw new Error(data.message || ('HTTP ' + res.status));
+    }
+    RAW = Array.isArray(data) ? data : [];
+    hasGender = RAW.some(u => u.M_GENDER === 'M' || u.M_GENDER === 'F');
+    document.getElementById('byline').textContent =
+      fmt(RAW.length) + ' registrants · ' + SOURCE_META[ACTIVE_SOURCE].desc + ' · aggregated, no names or phone numbers shown';
+    buildGenderChips();
+    deptUpdate = buildDeptPopover();
+    deptUpdate();
+  } catch (err) {
+    kpiRow.innerHTML = '';
+    document.getElementById('byline').textContent = '';
+    const banner = document.createElement('div');
+    banner.className = 'state-banner error';
+    banner.style.gridColumn = '1 / -1';
+    const p = document.createElement('p');
+    p.textContent = 'Could not load ' + SOURCE_META[ACTIVE_SOURCE].label.toLowerCase() + ': ' + err.message;
+    const retry = document.createElement('button');
+    retry.textContent = 'Retry';
+    retry.addEventListener('click', () => location.reload());
+    banner.appendChild(p); banner.appendChild(retry);
+    kpiRow.appendChild(banner);
+  }
+}
+
+document.getElementById('footNote').textContent =
+  'Live report, pulled from harvest-map’s own /api/users endpoint at request time — not a static snapshot. Only aggregated department + gender counts are shown; individual names and phone numbers are fetched but never rendered.';
+
+load();
 </script>
 </body>
 </html>
