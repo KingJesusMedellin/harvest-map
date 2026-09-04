@@ -76,7 +76,19 @@
     color: var(--ink);
     font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  .page { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; }
+  .page { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; position: relative; }
+
+  .lang-switch {
+    position: absolute; top: 26px; right: 24px; display: inline-flex; gap: 2px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    padding: 3px; box-shadow: var(--shadow); z-index: 5;
+  }
+  .lang-switch button {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12px; font-weight: 600;
+    padding: 5px 11px; border-radius: 999px; border: none; background: none;
+    color: var(--ink-2); cursor: pointer;
+  }
+  .lang-switch button.active { background: var(--accent-wash); color: var(--accent); }
 
   .eyebrow {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -238,8 +250,12 @@
 <div class="page">
 
   <header class="masthead">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
+      <button data-lang="es">ES</button>
+      <button data-lang="en">EN</button>
+    </div>
     <p class="eyebrow" id="eyebrow">Live report — harvest-map</p>
-    <h1>Where the Harvest Traveled</h1>
+    <h1 id="pageTitle">Where the Harvest Traveled</h1>
     <p class="dek" id="dek">Every registrant harvest-map knows about, right now, mapped to a department and rolled up here. Switch the source or filter below and the chart and table recompute together.</p>
     <div class="source-switch" id="sourceSwitch">
       <button data-source="pastors">Pastors database</button>
@@ -252,7 +268,7 @@
   <section class="kpi-row" id="kpiRow" aria-live="polite"></section>
 
   <div class="filter-bar" id="filterBar">
-    <span class="label">Filter</span>
+    <span class="label" id="filterLabel">Filter</span>
     <div style="position:relative;">
       <button class="fbtn" id="deptBtn" aria-haspopup="listbox"><span id="deptBtnLabel">Department</span> <svg class="chevron" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
       <div class="popover" id="deptPop" role="listbox"></div>
@@ -266,8 +282,8 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <div class="panel-title">Registrants by department</div>
-        <div class="panel-note">Top 12 departments by registrant count — spatially matched, not name-matched</div>
+        <div class="panel-title" id="deptChartTitle">Registrants by department</div>
+        <div class="panel-note" id="deptChartNote">Top 12 departments by registrant count — spatially matched, not name-matched</div>
       </div>
     </div>
     <div class="legend" id="deptLegend"></div>
@@ -277,7 +293,7 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <div class="panel-title">Aggregated breakdown</div>
+        <div class="panel-title" id="tableTitle">Aggregated breakdown</div>
         <div class="panel-note" id="tableNote">One row per department combination</div>
       </div>
     </div>
@@ -286,22 +302,22 @@
         <thead>
           <tr>
             <th style="width:40%">
-              <button class="th-top sorted" data-col="department">Department <span class="arrow">▾</span></button>
+              <button class="th-top sorted" data-col="department"><span class="th-label">Department</span> <span class="arrow">▾</span></button>
               <button class="th-filter" data-open="dept">Filter…</button>
             </th>
             <th class="gender-col" style="width:30%">
-              <button class="th-top" data-col="gender">Gender <span class="arrow">▾</span></button>
+              <button class="th-top" data-col="gender"><span class="th-label">Gender</span> <span class="arrow">▾</span></button>
               <button class="th-filter" data-open="gender">Filter…</button>
             </th>
             <th class="num" style="width:15%">
-              <button class="th-top" data-col="count">Count <span class="arrow">▾</span></button>
+              <button class="th-top" data-col="count"><span class="th-label">Count</span> <span class="arrow">▾</span></button>
             </th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
         <tfoot>
           <tr>
-            <td>Total — filtered rows shown</td>
+            <td id="tableTotalLabel">Total — filtered rows shown</td>
             <td class="gender-col"></td>
             <td class="num" id="tableTotal">—</td>
           </tr>
@@ -322,13 +338,127 @@ const params = new URLSearchParams(location.search);
 const rawSource = (params.get('source') || '').toLowerCase();
 const ACTIVE_SOURCE = (rawSource === 'live' || rawSource === 'file') ? rawSource : 'pastors';
 
-const SOURCE_META = {
-  live: { label: 'Live event feed', desc: 'Fetched live from harvest-map’s ingresoEventoGeoData endpoint.' },
-  file: { label: 'Local file', desc: 'Read from data/users.json on the server — the geocoder’s latest Colombia-only export.' },
-  pastors: { label: 'Pastors database', desc: 'Fetched live from harvest-map’s pastoresGeoData endpoint (default source).' },
-};
+const SOURCE_KEYS = { live: 'sourceLive', file: 'sourceFile', pastors: 'sourcePastors' };
+const SOURCE_DESC_KEYS = { live: 'descLive', file: 'descFile', pastors: 'descPastors' };
 
-document.getElementById('eyebrow').textContent = 'Live report · ' + SOURCE_META[ACTIVE_SOURCE].label;
+/* ---------------- translations ---------------- */
+const T = {
+  en: {
+    eyebrowPrefix: 'Live report', title: 'Where the Harvest Traveled',
+    dek: 'Every registrant harvest-map knows about, right now, mapped to a department and rolled up here. Switch the source or filter below and the chart and table recompute together.',
+    sourcePastors: 'Pastors database', sourceLive: 'Live event feed', sourceFile: 'Local file',
+    descLive: 'Fetched live from harvest-map’s ingresoEventoGeoData endpoint.',
+    descFile: 'Read from data/users.json on the server — the geocoder’s latest Colombia-only export.',
+    descPastors: 'Fetched live from harvest-map’s pastoresGeoData endpoint (default source).',
+    filterLabel: 'Filter', departmentBtn: 'Department', departmentBtnCount: 'Department ({n} of {total})',
+    resetFilters: 'Reset filters',
+    genderM: 'Male', genderF: 'Female', genderU: 'Not specified',
+    deptChartTitle: 'Registrants by department',
+    deptChartNote: 'Top 12 departments by registrant count — spatially matched, not name-matched',
+    tableTitle: 'Aggregated breakdown',
+    tableNoteGender: 'One row per department × gender combination',
+    tableNoteNoGender: 'One row per department (gender not available for this source)',
+    thDepartment: 'Department', thGender: 'Gender', thCount: 'Count',
+    tableTotalLabel: 'Total — filtered rows shown',
+    filterEllipsis: 'Filter…', filteredActive: 'Filtered',
+    kpiTotalLabel: 'Registrants matching filters', kpiTopDeptLabel: 'Top department',
+    kpiTopDeptSub: '{pct}% of matching registrants',
+    kpiDeptsReachedLabel: 'Colombian departments reached', kpiDeptsReachedSub: 'distinct departments',
+    kpiOutsideLabel: 'International / unresolved', kpiOutsideSub: '{n} of {total}',
+    matchCount: '{n} of {total} records', loading: 'Loading {source}…',
+    bylineLoaded: '{n} registrants · {desc} · aggregated, no names or phone numbers shown',
+    errorLoad: 'Could not load {source}: {msg}', retry: 'Retry',
+    noMatch: 'No records match the current filters.',
+    tableCaption: '{n} aggregated rows — sorted by {col}, {dir}.',
+    sortHigh: 'high to low', sortLow: 'low to high', all: 'All', none: 'None', search: 'Search…',
+    footNote: 'Live report, pulled from harvest-map’s own /api/users endpoint at request time — not a static snapshot. Only aggregated department + gender counts are shown; individual names and phone numbers are fetched but never rendered.',
+    deptInternational: 'International', deptInvalidCoords: 'Invalid Coordinates',
+    colDepartment: 'department', colGender: 'gender', colCount: 'count',
+    otherBucket: 'Other ({n} more)',
+  },
+  es: {
+    eyebrowPrefix: 'Informe en vivo', title: 'Adónde Llegó la Cosecha',
+    dek: 'Cada persona registrada que harvest-map conoce, en este momento, ubicada por departamento y resumida aquí. Cambia la fuente o filtra abajo y el gráfico y la tabla se recalculan juntos.',
+    sourcePastors: 'Base de datos de pastores', sourceLive: 'Feed de evento en vivo', sourceFile: 'Archivo local',
+    descLive: 'Obtenido en vivo del endpoint ingresoEventoGeoData de harvest-map.',
+    descFile: 'Leído desde data/users.json en el servidor — la última exportación del geocodificador, solo Colombia.',
+    descPastors: 'Obtenido en vivo del endpoint pastoresGeoData de harvest-map (fuente predeterminada).',
+    filterLabel: 'Filtrar', departmentBtn: 'Departamento', departmentBtnCount: 'Departamento ({n} de {total})',
+    resetFilters: 'Restablecer filtros',
+    genderM: 'Masculino', genderF: 'Femenino', genderU: 'No especificado',
+    deptChartTitle: 'Registrados por departamento',
+    deptChartNote: 'Los 12 departamentos con más registros — coincidencia espacial, no por nombre',
+    tableTitle: 'Resumen agregado',
+    tableNoteGender: 'Una fila por combinación de departamento × género',
+    tableNoteNoGender: 'Una fila por departamento (género no disponible para esta fuente)',
+    thDepartment: 'Departamento', thGender: 'Género', thCount: 'Cantidad',
+    tableTotalLabel: 'Total — filas filtradas mostradas',
+    filterEllipsis: 'Filtrar…', filteredActive: 'Filtrado',
+    kpiTotalLabel: 'Registrados que cumplen los filtros', kpiTopDeptLabel: 'Departamento principal',
+    kpiTopDeptSub: '{pct}% de los registrados filtrados',
+    kpiDeptsReachedLabel: 'Departamentos colombianos alcanzados', kpiDeptsReachedSub: 'departamentos distintos',
+    kpiOutsideLabel: 'Internacional / sin resolver', kpiOutsideSub: '{n} de {total}',
+    matchCount: '{n} de {total} registros', loading: 'Cargando {source}…',
+    bylineLoaded: '{n} registrados · {desc} · agregado, sin nombres ni teléfonos',
+    errorLoad: 'No se pudo cargar {source}: {msg}', retry: 'Reintentar',
+    noMatch: 'Ningún registro coincide con los filtros actuales.',
+    tableCaption: '{n} filas agregadas — ordenadas por {col}, {dir}.',
+    sortHigh: 'de mayor a menor', sortLow: 'de menor a mayor', all: 'Todos', none: 'Ninguno', search: 'Buscar…',
+    footNote: 'Informe en vivo, obtenido del propio endpoint /api/users de harvest-map en cada solicitud — no es una instantánea estática. Solo se muestran conteos agregados de departamento y género; los nombres y teléfonos individuales se obtienen pero nunca se muestran.',
+    deptInternational: 'Internacional', deptInvalidCoords: 'Coordenadas inválidas',
+    colDepartment: 'departamento', colGender: 'género', colCount: 'cantidad',
+    otherBucket: 'Otros ({n} más)',
+  },
+};
+const LANG_STORAGE_KEY = 'harvest-report-lang';
+function detectLang(){
+  const stored = localStorage.getItem(LANG_STORAGE_KEY);
+  if (stored === 'en' || stored === 'es') return stored;
+  return (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es';
+}
+let LANG = detectLang();
+function t(key, vars){
+  let s = (T[LANG] && T[LANG][key]) || T.en[key] || key;
+  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(String(vars[k]));
+  return s;
+}
+function displayDept(name){
+  if (name === 'International') return t('deptInternational');
+  if (name === 'Invalid Coordinates') return t('deptInvalidCoords');
+  return name;
+}
+
+function applyStaticText(){
+  document.getElementById('eyebrow').textContent = t('eyebrowPrefix') + ' · ' + t(SOURCE_KEYS[ACTIVE_SOURCE]);
+  document.getElementById('pageTitle').textContent = t('title');
+  document.getElementById('dek').textContent = t('dek');
+  document.querySelectorAll('#sourceSwitch button').forEach(b => {
+    b.textContent = t(SOURCE_KEYS[b.dataset.source]);
+  });
+  document.getElementById('filterLabel').textContent = t('filterLabel');
+  document.getElementById('resetBtn').textContent = t('resetFilters');
+  document.getElementById('deptChartTitle').textContent = t('deptChartTitle');
+  document.getElementById('deptChartNote').textContent = t('deptChartNote');
+  document.getElementById('tableTitle').textContent = t('tableTitle');
+  document.getElementById('tableTotalLabel').textContent = t('tableTotalLabel');
+  document.querySelector('[data-col="department"] .th-label').textContent = t('thDepartment');
+  document.querySelector('[data-col="gender"] .th-label').textContent = t('thGender');
+  document.querySelector('[data-col="count"] .th-label').textContent = t('thCount');
+  document.querySelectorAll('#langSwitch button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === LANG);
+  });
+}
+document.querySelectorAll('#langSwitch button').forEach(b => {
+  b.addEventListener('click', () => {
+    LANG = b.dataset.lang;
+    localStorage.setItem(LANG_STORAGE_KEY, LANG);
+    applyStaticText();
+    if (typeof updateGenderChipLabels === 'function') updateGenderChipLabels();
+    if (typeof deptUpdate !== 'undefined' && deptUpdate) deptUpdate();
+    else if (RAW.length) rerender();
+  });
+});
+
 document.querySelectorAll('#sourceSwitch button').forEach(b => {
   b.classList.toggle('active', b.dataset.source === ACTIVE_SOURCE);
   b.addEventListener('click', () => { location.href = '/report?source=' + b.dataset.source; });
@@ -364,7 +494,7 @@ function niceMax(v){
   return 10*mag;
 }
 function genderKey(g){ return g === 'M' ? 'M' : g === 'F' ? 'F' : 'U'; }
-const GENDER_LABEL = { M: 'Male', F: 'Female', U: 'Not specified' };
+function genderLabel(g){ return t('gender' + g); }
 const GENDER_COLOR = { M: 'var(--gender-m)', F: 'var(--gender-f)', U: 'var(--gender-u)' };
 
 /* ---------------- tooltip ---------------- */
@@ -439,10 +569,10 @@ function renderKPIs(rows){
   const wrap = document.getElementById('kpiRow');
   wrap.innerHTML = '';
   const tiles = [
-    ['Registrants matching filters', fmt(total), SOURCE_META[ACTIVE_SOURCE].label],
-    ['Top department', topDept, topPct + '% of matching registrants'],
-    ['Colombian departments reached', realDepts.length, 'distinct departments'],
-    ['International / unresolved', outsidePct + '%', fmt(outside) + ' of ' + fmt(total)],
+    [t('kpiTotalLabel'), fmt(total), t(SOURCE_KEYS[ACTIVE_SOURCE])],
+    [t('kpiTopDeptLabel'), displayDept(topDept), t('kpiTopDeptSub', { pct: topPct })],
+    [t('kpiDeptsReachedLabel'), realDepts.length, t('kpiDeptsReachedSub')],
+    [t('kpiOutsideLabel'), outsidePct + '%', t('kpiOutsideSub', { n: fmt(outside), total: fmt(total) })],
   ];
   tiles.forEach(([label, value, sub]) => {
     const d = document.createElement('div');
@@ -467,7 +597,7 @@ function renderDeptChart(rows){
     svg.appendChild(fo);
     const wrap = document.createElement('div');
     wrap.className = 'empty-state';
-    wrap.textContent = 'No records match the current filters.';
+    wrap.textContent = t('noMatch');
     fo.appendChild(wrap);
     return;
   }
@@ -486,7 +616,7 @@ function renderDeptChart(rows){
   if (rest.length){
     const other = { M:0, F:0, U:0, ALL:0, total:0 };
     rest.forEach(([,v]) => { other.M+=v.M; other.F+=v.F; other.U+=v.U; other.ALL+=v.ALL; other.total+=v.total; });
-    shown.push(['Other (' + rest.length + ' more)', other]);
+    shown.push([t('otherBucket', { n: rest.length }), other]);
   }
 
   const rowH = 24, rowGap = 8, ML = 200, MR = 70, MT = 8, MB = 8;
@@ -496,15 +626,16 @@ function renderDeptChart(rows){
   const max = niceMax(Math.max(...shown.map(([,v]) => v.total)));
 
   if (hasGender){
-    [['M','Male'],['F','Female'],['U','Not specified']].forEach(([k,label]) => {
+    ['M','F','U'].forEach(k => {
       const item = document.createElement('span'); item.className = 'legend-item';
       const sw = document.createElement('span'); sw.className = 'legend-swatch'; sw.style.background = GENDER_COLOR[k];
-      item.appendChild(sw); item.appendChild(document.createTextNode(label));
+      item.appendChild(sw); item.appendChild(document.createTextNode(genderLabel(k)));
       legend.appendChild(item);
     });
   }
 
-  shown.forEach(([name, v], i) => {
+  shown.forEach(([rawName, v], i) => {
+    const name = displayDept(rawName);
     const y = MT + i * (rowH + rowGap);
     const labelFont = '12.5px "IBM Plex Sans", sans-serif';
     const truncatedName = truncateToWidth(name, ML - 20, labelFont);
@@ -530,7 +661,7 @@ function renderDeptChart(rows){
       } else {
         shape = el('rect', {x:cx, y:y, width: Math.max(segW,1), height: rowH, fill: color});
       }
-      const lbl = hasGender ? (name + ' — ' + GENDER_LABEL[g]) : name;
+      const lbl = hasGender ? (name + ' — ' + genderLabel(g)) : name;
       shape.addEventListener('pointermove', e => showTip(e, fmt(val), lbl));
       shape.addEventListener('pointerenter', e => showTip(e, fmt(val), lbl));
       shape.addEventListener('pointerleave', hideTip);
@@ -563,15 +694,16 @@ function renderTable(rows){
     const tdDept = document.createElement('td');
     const deptSpan = document.createElement('span');
     deptSpan.className = 'ellipsis';
-    deptSpan.textContent = r.department;
-    deptSpan.title = r.department;
+    const deptDisplay = displayDept(r.department);
+    deptSpan.textContent = deptDisplay;
+    deptSpan.title = deptDisplay;
     tdDept.appendChild(deptSpan);
     tr.appendChild(tdDept);
 
     const tdGender = document.createElement('td'); tdGender.className = 'gendercell gender-col';
     if (hasGender){
       const dot = document.createElement('span'); dot.className = 'type-dot'; dot.style.background = GENDER_COLOR[r.gender];
-      const label = document.createElement('span'); label.textContent = GENDER_LABEL[r.gender];
+      const label = document.createElement('span'); label.textContent = genderLabel(r.gender);
       tdGender.appendChild(dot); tdGender.appendChild(label);
     }
     tr.appendChild(tdGender);
@@ -582,11 +714,15 @@ function renderTable(rows){
   body.appendChild(frag);
 
   document.getElementById('tableTotal').textContent = fmt(sorted.reduce((s,r) => s + r.count, 0));
-  document.getElementById('tableCaption').textContent =
-    `${fmt(sorted.length)} aggregated rows — sorted by ${state.sortCol}, ${state.sortDir === 'desc' ? 'high to low' : 'low to high'}.`;
+  const colNameKey = { department: 'colDepartment', gender: 'colGender', count: 'colCount' }[state.sortCol];
+  document.getElementById('tableCaption').textContent = t('tableCaption', {
+    n: fmt(sorted.length),
+    col: t(colNameKey),
+    dir: state.sortDir === 'desc' ? t('sortHigh') : t('sortLow'),
+  });
   document.getElementById('tableNote').textContent = hasGender
-    ? 'One row per department × gender combination'
-    : 'One row per department (gender not available for this source)';
+    ? t('tableNoteGender')
+    : t('tableNoteNoGender');
 
   document.querySelectorAll('.th-top').forEach(b => {
     b.classList.toggle('sorted', b.dataset.col === state.sortCol);
@@ -610,25 +746,26 @@ function buildDeptPopover(){
   function render(filterText){
     popEl.innerHTML = '';
     const searchWrap = document.createElement('div'); searchWrap.className = 'popover-search';
-    const input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Search…'; input.value = filterText || '';
+    const input = document.createElement('input'); input.type = 'text'; input.placeholder = t('search'); input.value = filterText || '';
     input.addEventListener('input', () => render(input.value));
     searchWrap.appendChild(input); popEl.appendChild(searchWrap);
 
     const actions = document.createElement('div'); actions.className = 'popover-actions';
-    const allBtn = document.createElement('button'); allBtn.textContent = 'All';
-    const noneBtn = document.createElement('button'); noneBtn.textContent = 'None';
+    const allBtn = document.createElement('button'); allBtn.textContent = t('all');
+    const noneBtn = document.createElement('button'); noneBtn.textContent = t('none');
     allBtn.addEventListener('click', () => { options.forEach(o => state.departments.add(o)); update(); });
     noneBtn.addEventListener('click', () => { state.departments.clear(); update(); });
     actions.appendChild(allBtn); actions.appendChild(noneBtn); popEl.appendChild(actions);
 
     const list = document.createElement('div'); list.className = 'popover-list';
     const q = (filterText || '').toLowerCase();
-    options.filter(o => o.toLowerCase().includes(q)).forEach(o => {
+    options.filter(o => o.toLowerCase().includes(q) || displayDept(o).toLowerCase().includes(q)).forEach(o => {
       const lab = document.createElement('label');
       const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = state.departments.has(o);
       cb.addEventListener('change', () => { if (cb.checked) state.departments.add(o); else state.departments.delete(o); update(); });
       lab.appendChild(cb);
-      const span = document.createElement('span'); span.className = 'ellipsis'; span.style.maxWidth = '220px'; span.textContent = o; span.title = o; lab.appendChild(span);
+      const optDisplay = displayDept(o);
+      const span = document.createElement('span'); span.className = 'ellipsis'; span.style.maxWidth = '220px'; span.textContent = optDisplay; span.title = optDisplay; lab.appendChild(span);
       list.appendChild(lab);
     });
     popEl.appendChild(list);
@@ -638,7 +775,7 @@ function buildDeptPopover(){
   function update(){
     render(popEl.querySelector('input')?.value);
     const n = state.departments.size, total = options.length;
-    labelEl.textContent = n === total ? 'Department' : `Department (${n} of ${total})`;
+    labelEl.textContent = n === total ? t('departmentBtn') : t('departmentBtnCount', { n, total });
     btnEl.classList.toggle('active', n !== total);
     rerender();
   }
@@ -666,16 +803,23 @@ function buildGenderChips(){
   ['M','F','U'].forEach(g => {
     const chip = document.createElement('button');
     chip.className = 'chip on';
-    chip.innerHTML = '';
+    chip.dataset.gender = g;
     const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = GENDER_COLOR[g];
+    const labelSpan = document.createElement('span'); labelSpan.className = 'chip-label'; labelSpan.textContent = genderLabel(g);
     chip.appendChild(dot);
-    chip.appendChild(document.createTextNode(GENDER_LABEL[g]));
+    chip.appendChild(labelSpan);
     chip.addEventListener('click', () => {
       if (state.genders.has(g)) state.genders.delete(g); else state.genders.add(g);
       chip.classList.toggle('on');
       rerender();
     });
     wrap.appendChild(chip);
+  });
+}
+function updateGenderChipLabels(){
+  document.querySelectorAll('#genderChips .chip').forEach(chip => {
+    const labelSpan = chip.querySelector('.chip-label');
+    if (labelSpan) labelSpan.textContent = genderLabel(chip.dataset.gender);
   });
 }
 
@@ -712,7 +856,7 @@ document.querySelectorAll('.th-filter').forEach(b => {
 
 function rerender(){
   const rows = filteredRaw();
-  document.getElementById('matchCount').textContent = `${fmt(rows.length)} of ${fmt(RAW.length)} records`;
+  document.getElementById('matchCount').textContent = t('matchCount', { n: fmt(rows.length), total: fmt(RAW.length) });
   renderKPIs(rows);
   renderDeptChart(rows);
   renderTable(rows);
@@ -724,13 +868,13 @@ function rerender(){
     }
     if (b.dataset.open === 'gender') active = state.genders.size !== 3;
     b.classList.toggle('active', active);
-    b.textContent = active ? 'Filtered' : 'Filter…';
+    b.textContent = active ? t('filteredActive') : t('filterEllipsis');
   });
 }
 
 /* ---------------- load ---------------- */
 async function load(){
-  document.getElementById('byline').textContent = 'Loading ' + SOURCE_META[ACTIVE_SOURCE].label.toLowerCase() + '…';
+  document.getElementById('byline').textContent = t('loading', { source: t(SOURCE_KEYS[ACTIVE_SOURCE]).toLowerCase() });
   const kpiRow = document.getElementById('kpiRow');
   try {
     const url = '/api/users?source=' + encodeURIComponent(ACTIVE_SOURCE);
@@ -741,8 +885,10 @@ async function load(){
     }
     RAW = Array.isArray(data) ? data : [];
     hasGender = RAW.some(u => u.M_GENDER === 'M' || u.M_GENDER === 'F');
-    document.getElementById('byline').textContent =
-      fmt(RAW.length) + ' registrants · ' + SOURCE_META[ACTIVE_SOURCE].desc + ' · aggregated, no names or phone numbers shown';
+    document.getElementById('byline').textContent = t('bylineLoaded', {
+      n: fmt(RAW.length),
+      desc: t(SOURCE_DESC_KEYS[ACTIVE_SOURCE]),
+    });
     buildGenderChips();
     deptUpdate = buildDeptPopover();
     deptUpdate();
@@ -753,17 +899,17 @@ async function load(){
     banner.className = 'state-banner error';
     banner.style.gridColumn = '1 / -1';
     const p = document.createElement('p');
-    p.textContent = 'Could not load ' + SOURCE_META[ACTIVE_SOURCE].label.toLowerCase() + ': ' + err.message;
+    p.textContent = t('errorLoad', { source: t(SOURCE_KEYS[ACTIVE_SOURCE]).toLowerCase(), msg: err.message });
     const retry = document.createElement('button');
-    retry.textContent = 'Retry';
+    retry.textContent = t('retry');
     retry.addEventListener('click', () => location.reload());
     banner.appendChild(p); banner.appendChild(retry);
     kpiRow.appendChild(banner);
   }
 }
 
-document.getElementById('footNote').textContent =
-  'Live report, pulled from harvest-map’s own /api/users endpoint at request time — not a static snapshot. Only aggregated department + gender counts are shown; individual names and phone numbers are fetched but never rendered.';
+applyStaticText();
+document.getElementById('footNote').textContent = t('footNote');
 
 load();
 </script>

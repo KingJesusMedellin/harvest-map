@@ -9,6 +9,8 @@ import { Drawer } from "./components/drawer";
 import { ColombiaDeptProperties, User } from "./types";
 import { Summary } from "./components/summary";
 import { ErrorToast } from "./components/error-toast";
+import { LanguageSwitcher } from "./components/language-switcher";
+import { useLanguage } from "./language-context";
 
 declare global {
   interface Window {
@@ -55,6 +57,7 @@ function DeckGLOverlay({
   usersData,
 }: DeckGLOverlayProps) {
   const map = useMap();
+  const { t } = useLanguage();
 
   const overlay = useMemo(
     () =>
@@ -111,9 +114,7 @@ function DeckGLOverlay({
         // (also flat) points and can occlude them regardless of layer order.
         parameters: { depthTest: false },
         onError: () => {
-          setServiceError(
-            "El servicio de usuarios no esta disponible en este momento. Por favor intenta de nuevo mas tarde.",
-          );
+          setServiceError(t("app.serviceUnavailable"));
         },
         onDataLoad: () => {
           setServiceError(null);
@@ -127,6 +128,7 @@ function DeckGLOverlay({
       departmentCounts,
       maxCount,
       usersData,
+      t,
       setSelectedDept,
       setIsDrawerOpen,
       setServiceError,
@@ -170,6 +172,7 @@ export default function MapComponent({
   initialCenter: { lat: number; lng: number };
   source?: string;
 }) {
+  const { t } = useLanguage();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedDept, setSelectedDept] =
     useState<ColombiaDeptProperties | null>(null);
@@ -195,13 +198,11 @@ export default function MapComponent({
         const data = await res.json();
         setUsers(data);
       } catch {
-        setServiceError(
-          "No se pudo cargar la informacion de los usuarios en este momento. Intenta de nuevo mas tarde.",
-        );
+        setServiceError(t("app.loadError"));
       }
     }
     loadUsers();
-  }, [source]);
+  }, [source, t]);
 
   // 2. Generate a map of { "BOGOTA": 45, "ANTIOQUIA": 12 } and find the maximum
   const { departmentCounts, maxCount, internationalCount } = useMemo(() => {
@@ -247,14 +248,14 @@ export default function MapComponent({
     // Append international item to the very bottom if there are any users found there
     if (internationalCount > 0) {
       localStats.push({
-        name: "Fuera de Colombia 🌐",
+        name: t("app.international"),
         count: internationalCount,
         isInternational: true,
       });
     }
 
     return localStats;
-  }, [departmentCounts, internationalCount]);
+  }, [departmentCounts, internationalCount, t]);
 
   return (
     <div id="map-container">
@@ -275,6 +276,9 @@ export default function MapComponent({
           />
         </Map>
       </APIProvider>
+
+      {/* Language filter */}
+      <LanguageSwitcher />
 
       {/* Error alert toast */}
       <ErrorToast

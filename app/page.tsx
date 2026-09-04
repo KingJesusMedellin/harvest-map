@@ -1,4 +1,5 @@
 import MapComponent from "./component";
+import { LanguageProvider } from "./language-context";
 
 export default async function Page({
   searchParams,
@@ -13,10 +14,12 @@ export default async function Page({
   const source = params.source;
 
   return (
-    <MapComponent
-      initialZoom={zoom}
-      initialCenter={{ lat, lng }}
-      source={source}
-    />
+    <LanguageProvider>
+      <MapComponent
+        initialZoom={zoom}
+        initialCenter={{ lat, lng }}
+        source={source}
+      />
+    </LanguageProvider>
   );
 }

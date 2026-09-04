@@ -9,6 +9,7 @@ export interface User {
   id?: string | number;
   M_NAME: string;
   M_REFERRED_NAME?: string;
+  M_GENDER?: string;
   M_DIR_LAT: string;
   M_DIR_LON: string;
   department?: string;

@@ -1,4 +1,5 @@
 import { ColombiaDeptProperties, User } from "../types";
+import { useLanguage } from "../language-context";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function Drawer({
   department,
   departmentUsers,
 }: DrawerProps) {
+  const { t } = useLanguage();
   if (!isOpen || !department) return null;
 
   return (
@@ -63,10 +65,10 @@ export function Drawer({
 
           <div className="mt-1.5 flex items-center space-x-2">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-              {departmentUsers.length} Active Users
+              {t("drawer.activeUsers", { count: departmentUsers.length })}
             </span>
             <span className="text-xs text-slate-400 font-mono">
-              ID: {department.DPTO || "N/A"}
+              {t("drawer.id", { id: department.DPTO || "N/A" })}
             </span>
           </div>
         </div>
@@ -76,9 +78,7 @@ export function Drawer({
           {departmentUsers.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
               <p className="text-3xl mb-2">👥</p>
-              <p className="text-sm font-medium">
-                No users found inside this region.
-              </p>
+              <p className="text-sm font-medium">{t("drawer.noUsers")}</p>
             </div>
           ) : (
             departmentUsers.map((user: User, index: number) => (
@@ -89,11 +89,15 @@ export function Drawer({
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
-                      {capitalizeName(user.M_NAME) || `User #${user.id}`}
+                      {capitalizeName(user.M_NAME) ||
+                        t("drawer.userFallback", { id: user.id ?? "" })}
                     </h4>
                     <p className="text-xs text-slate-400 mt-0.5">
                       {capitalizeName(user.M_REFERRED_NAME || "") ||
-                        "No contact email provided"}
+                        t("drawer.noContact")}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {user.M_GENDER}
                     </p>
                   </div>
 
